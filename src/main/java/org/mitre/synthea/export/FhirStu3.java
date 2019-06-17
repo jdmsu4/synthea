@@ -2343,8 +2343,13 @@ public class FhirStu3 {
 
     if (TRANSACTION_BUNDLE) {
       BundleEntryRequestComponent request = entry.getRequest();
-      request.setMethod(HTTPVerb.POST);
-      request.setUrl(resource.getResourceType().name());
+      request.setMethod(HTTPVerb.PUT);
+      request.setUrl(resource.getResourceType().name() + "/" + resourceID);
+      if (Boolean.parseBoolean(Config.get("exporter.fhir.bulk_data"))) {
+        request.setIfNoneExist(resource.fhirType() + "/" + resourceID);
+      } else {
+        request.setIfNoneExist("identifier=urn:uuid:" + resourceID);
+      }
       entry.setRequest(request);
     }
 
